@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.uniara.CustomerService.DTO.CreateCustomerDTO;
+import org.uniara.CustomerService.DTO.UpdateCustomerDTO;
 import org.uniara.CustomerService.constant.Constant;
 import org.uniara.CustomerService.model.Customer;
 import org.uniara.CustomerService.service.CustomerService;
@@ -38,8 +39,17 @@ public class CustomerController {
     }
 
     @PutMapping(Constant.API_CUSTOMERS)
-    public ResponseEntity<Customer> update(/*@RequestHeader("Authorization") String token, */@RequestBody Customer customer) {
-        return ResponseEntity.ok(customerService.save(customer));
+    public ResponseEntity<Customer> update(/*@RequestHeader("Authorization") String token, */@RequestBody UpdateCustomerDTO dto) {
+        Optional<Customer> customer = customerService.findById(dto.getId());
+
+        if (customer.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        customer.get().setName(dto.getName());
+        customer.get().setPhoneNumber(dto.getPhoneNumber());
+
+        return ResponseEntity.ok(customerService.save(customer.get()));
     }
 
     @GetMapping(Constant.API_CUSTOMERS + "/{id}")
