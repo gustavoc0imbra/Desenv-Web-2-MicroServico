@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.uniara.ProductService.DTO.CreateProductDTO;
 import org.uniara.ProductService.constant.Constant;
 import org.uniara.ProductService.model.Product;
 import org.uniara.ProductService.service.ProductService;
@@ -23,10 +24,20 @@ public class ProductController {
     }
 
     @PostMapping(Constant.API_PRODUCTS)
-    public ResponseEntity<Product> save(/*@RequestHeader("Authorization") String token, */@RequestBody Product product) {
+    public ResponseEntity<Product> save(/*@RequestHeader("Authorization") String token, */@RequestBody CreateProductDTO dto) {
+        Product product = new Product();
+
         if (product.getCreatedAt() == null) {
             product.setCreatedAt(new Date());
         }
+
+        if (!product.isAvailable()) {
+            product.setAvailable(false);
+        }
+
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setPrice(dto.getPrice());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
     }
