@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.uniara.CustomerService.DTO.CreateCustomerDTO;
 import org.uniara.CustomerService.constant.Constant;
 import org.uniara.CustomerService.model.Customer;
 import org.uniara.CustomerService.service.CustomerService;
@@ -23,10 +24,15 @@ public class CustomerController {
     }
 
     @PostMapping(Constant.API_CUSTOMERS)
-    public ResponseEntity<Customer> save(/*@RequestHeader("Authorization") String token, */@RequestBody Customer customer) {
+    public ResponseEntity<Customer> save(/*@RequestHeader("Authorization") String token, */@RequestBody CreateCustomerDTO dto) {
+        Customer customer = new Customer();
+
         if (customer.getCreatedAt() == null) {
             customer.setCreatedAt(new Date());
         }
+
+        customer.setName(dto.getName());
+        customer.setPhoneNumber(dto.getPhoneNumber());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(customerService.save(customer));
     }
