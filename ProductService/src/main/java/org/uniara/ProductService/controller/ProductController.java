@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.uniara.ProductService.DTO.CreateProductDTO;
+import org.uniara.ProductService.DTO.UpdateProductDTO;
 import org.uniara.ProductService.constant.Constant;
 import org.uniara.ProductService.model.Product;
 import org.uniara.ProductService.service.ProductService;
@@ -43,8 +44,19 @@ public class ProductController {
     }
 
     @PutMapping(Constant.API_PRODUCTS)
-    public ResponseEntity<Product> update(/*@RequestHeader("Authorization") String token, */@RequestBody Product product) {
-        return ResponseEntity.ok(productService.save(product));
+    public ResponseEntity<Product> update(/*@RequestHeader("Authorization") String token, */@RequestBody UpdateProductDTO dto) {
+        Optional<Product> product = productService.findById(dto.getId());
+
+        if (product.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        product.get().setName(dto.getName());
+        product.get().setDescription(dto.getDescription());
+        product.get().setPrice(dto.getPrice());
+        product.get().setAvailable(dto.getIsAvailable());
+
+        return ResponseEntity.ok(productService.save(product.get()));
     }
 
     @GetMapping(Constant.API_PRODUCTS + "/{id}")
